@@ -1,6 +1,6 @@
 <img src="assets/logo_neoretro.png" width="55%" title="neoretro logo" />
 
-# neoretro-dark
+# neoretro
 
 Current Version: [0.134](CHANGELOG.md) [![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 

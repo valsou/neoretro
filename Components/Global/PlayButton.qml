@@ -4,18 +4,13 @@ import QtQuick.Layouts 1.15
 Rectangle {
 
     readonly property int xMargins: vpx(12)
-    readonly property int yMargins: vpx(3)
-    readonly property int count: collections[currentCollectionIndex].games.count
+    readonly property int yMargins: vpx(1)
     readonly property int fontSize: vpx(18)
 
     width: iconMetrics.width + valueMetrics.width + xMargins * 2
     height: iconMetrics.height > valueMetrics.height ? iconMetrics.height + yMargins * 2 : valueMetrics.height + yMargins * 2
 
-    color: Qt.rgba(backgroundColor.r, backgroundColor.g, backgroundColor.b, 0.15)
-    // border {
-    //     width: vpx(1)
-    //     color: textColor
-    // }
+    color: "green"
 
     Behavior on width {
         PropertyAnimation { properties: "width"; easing.type: Easing.InOutQuad }
@@ -23,37 +18,40 @@ Rectangle {
 
     TextMetrics {
         id: iconMetrics
-        text: "\ue0b8"
-        font.family: googleMaterial.name
-        font.pixelSize: fontSize
+        text: "\ue037"
+        font {
+            family: googleMaterial.name
+            pixelSize: fontSize
+        }
     }
 
     TextMetrics {
         id: valueMetrics
-        text: count+" games"
-        font.family: regularDosis.name
-        font.pixelSize: fontSize
+        text: "PLAY"
+        font {
+            family: regularDosis.name
+            pixelSize: fontSize
+            styleName: "SemiBold"
+        }
     }
 
     RowLayout {
         anchors.centerIn: parent
 
-        Layout.margins: vpx(10)
+        // Layout.margins: vpx(1)
 
         Text {
             id: icon
             text: iconMetrics.text
-            font.family: googleMaterial.name
-            font.pixelSize: fontSize
-            color: textColor
+            font: iconMetrics.font
+            color: "white"
         }
 
         Text {
             id: value
             text: valueMetrics.text
-            font.family: regularDosis.name
-            font.pixelSize: fontSize
-            color: textColor
+            font: valueMetrics.font
+            color: "white"
         }
     }
 

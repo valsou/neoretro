@@ -7,6 +7,7 @@ Rectangle {
     id: root
 
     readonly property var blurHashBackground: BlurHashes.blurHashCollections[collections[currentCollectionIndex].shortName] || BlurHashes.blurHashCollections["default"]
+    readonly property real variableOpacity: darkTheme ? 0.25 : 0.4
 
     anchors.fill: parent
 
@@ -19,7 +20,8 @@ Rectangle {
 
         asynchronous: true
 
-        source: "../assets/collections/art/"+collections[currentCollectionIndex].shortName+".jpg"
+        source: currentPageIndex == 3 ? currentGame.assets.screenshot :
+                "../assets/collections/art/"+collections[currentCollectionIndex].shortName+".jpg"
         sourceSize.width: width
         sourceSize.height: height
         fillMode: Image.PreserveAspectCrop
@@ -31,9 +33,9 @@ Rectangle {
     FastBlur {
         anchors.fill: background
         source: background
-        radius: 64
+        radius: 96
         visible: (background.status == Image.Ready)
-        opacity: visible ? 0.2 : 0
+        opacity: visible ? variableOpacity : 0
         Behavior on opacity { OpacityAnimator { duration: 600 } }
     }
 
@@ -45,7 +47,19 @@ Rectangle {
         horizontalAlignment: Image.AlignHCenter
         verticalAlignment: Image.AlignVCenter
         visible: (background.status != Image.Ready)
-        opacity: visible ? 0.2 : 0
+        opacity: visible ? variableOpacity : 0
+    }
+
+    // Gradient behind top bar
+    Rectangle {
+        width: root.width
+        height: root.height * 0.3
+        anchors.top: root.top
+
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: backgroundColor }
+            GradientStop { position: 1.0; color: "transparent" }
+        }
     }
 
 }

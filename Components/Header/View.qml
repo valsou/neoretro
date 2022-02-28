@@ -17,6 +17,8 @@ FocusScope {
         anchors.top: time.top
         anchors.bottom: root.bottom
         anchors.bottomMargin: vpx(7)
+
+        opacity: parent.activeFocus ? 1 : 0.5
     }
 
     Time {
@@ -32,7 +34,7 @@ FocusScope {
         anchors.top: root.bottom
         anchors.left: root.left
         anchors.right: root.right
-        color: textColor
+        color: Qt.rgba(textColor.r, textColor.g, textColor.b, 0.2)
     }
 
 }

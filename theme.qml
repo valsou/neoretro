@@ -8,8 +8,6 @@ import "./utils.js" as Utils
 FocusScope {
     id: root
 
-    focus: true
-
     /* Fonts */
     FontLoader { id: lightDosis; source: "assets/fonts/Dosis-Light.ttf" }
     FontLoader { id: regularDosis; source: "assets/fonts/Dosis-Regular.ttf" }
@@ -24,24 +22,31 @@ FocusScope {
     /*******************/
 
     /* Global Settings */
-    property bool darkTheme: false
+    property bool darkTheme: api.memory.get("darkTheme") || false
     property bool enableMouse: false
     /*******************/
 
     /* Styling */
-    readonly property var textColor: darkTheme ? "white" : "black"
-    readonly property var backgroundColor: darkTheme ? Qt.rgba(0.1, 0.1, 0.1) : Qt.rgba(0.9, 0.9, 0.9)
+    readonly property var textColor: darkTheme ? Qt.rgba(0.7, 0.7, 0.7) : "black"
+    readonly property var backgroundColor: darkTheme ? Qt.rgba(0, 0, 0) : Qt.rgba(1, 1, 1)
     /*******************/
 
-    property int currentPageIndex: api.memory.get('currentPageIndex') || 1
+    property int currentPageIndex: api.memory.get("currentPageIndex") || 0
+
+    /* Games */
+    property int currentGameIndex: 0
+    property var currentGame: collections[currentCollectionIndex].games.get(currentGameIndex)
+    property int gridColumns: api.memory.get("gamesGridColumns") || 5
+    property int gridRows: api.memory.get("gamesGridRows") || 3
+
 
     /* Collections */
     property int currentCollectionIndex: api.memory.get('currentCollectionIndex') ?? 0
     property var collectionSortBy: "name"
 
-    property bool showAllGamesCollection: true
-    property bool showFavoritesCollection: true
-    property bool showLastPlayedCollection: true
+    property bool showAllGamesCollection: api.memory.get("showAllGamesCollection") || false
+    property bool showFavoritesCollection: api.memory.get("showFavoritesCollection") || false
+    property bool showLastPlayedCollection: api.memory.get("showLastPlayedCollection") || false
 
     property var collections: {
         let collections = api.collections.toVarArray()
@@ -90,10 +95,10 @@ FocusScope {
 
     /* States */
     states: [
-        State { name: 'settingsView'; when: currentPageIndex == 0; PropertyChanges { target: contentLoader; source: "Components/SettingsView.qml" } },
+        State { name: 'settingsView'; when: currentPageIndex == 0; PropertyChanges { target: contentLoader; source: "Components/Settings/View.qml" } },
         State { name: 'homeView'; when: currentPageIndex == 1; PropertyChanges { target: contentLoader; source: "Components/HomeView.qml" } },
         State { name: 'collectionsView'; when: currentPageIndex == 2; PropertyChanges { target: contentLoader; source: "Components/Collections/View.qml" } },
-        State { name: 'gamesView'; when: currentPageIndex == 3; PropertyChanges { target: contentLoader; source: "Components/GamesView.qml" } }
+        State { name: 'gamesView'; when: currentPageIndex == 3; PropertyChanges { target: contentLoader; source: "Components/Games/View.qml" } }
     ]
     /* ------------------ */
 
@@ -122,6 +127,9 @@ FocusScope {
     }
 
     Component.onDestruction: {
+        api.memory.set('darkTheme', darkTheme)
+        api.memory.set('gamesGridColumns', gridColumns)
+        api.memory.set('gamesGridRows', gridRows)
         api.memory.set('currentPageIndex', currentPageIndex)
         api.memory.set('currentCollectionIndex', currentCollectionIndex)
     }
@@ -151,8 +159,8 @@ FocusScope {
     Loader {
         id: topLoader
 
-        width: vpx(root.width * 0.8)
-        height: vpx(root.width * 0.05)
+        width: root.width * 0.8
+        height: root.width * 0.05
         anchors.top: root.top
         anchors.horizontalCenter: root.horizontalCenter
 
@@ -173,15 +181,22 @@ FocusScope {
     Loader {
         id: contentLoader
 
-        width: vpx(root.width * 0.8)
+        width: root.width * 0.8
         anchors.top: topLoader.bottom
         anchors.bottom: root.bottom
         anchors.horizontalCenter: root.horizontalCenter
 
         asynchronous: true
         focus: true
-        opacity: contentLoader.status === Loader.Ready ? 1 : 0
-        Behavior on opacity { OpacityAnimator { duration: 300; from: 0 } }
+        visible: contentLoader.status === Loader.Ready ? 1 : 0
+        opacity: {
+            if (visible)
+                if (focus) return 1.0
+                else return 0.3
+            return 0
+        }
+        // opacity: contentLoader.status === Loader.Ready ? 1 : 0
+        Behavior on opacity { OpacityAnimator { duration: 300 } }
         active: true
 
         Keys.onUpPressed: {
@@ -201,27 +216,29 @@ FocusScope {
     // Global event handler
     Keys.onPressed: {
         if (api.keys.isPrevPage(event)) {
-            prevPage()
             event.accepted = true
+            prevPage()
         }
         if (api.keys.isNextPage(event)) {
+            event.accepted = true
             nextPage()
-            event.accepted = true
         }
-        if (api.keys.isDetails(event)) {
-            showFavoritesCollection = !showFavoritesCollection
+
+        // DEBUG DARK THEME
+        if (api.keys.isFilters(event)) {
             event.accepted = true
+            darkTheme = !darkTheme
         }
     }
 
-    Text {
-        anchors {
-            top: root.top
-            right: root.right
-        }
-        text: currentCollectionIndex
-        color: "red"
-        font.pixelSize: vpx(46)
-    }
+    // Text {
+    //     anchors {
+    //         top: root.top
+    //         right: root.right
+    //     }
+    //     text: "Grid columns : "+gridColumns+"\nGrid rows : "+gridRows
+    //     color: "red"
+    //     font.pixelSize: vpx(46)
+    // }
 
 }

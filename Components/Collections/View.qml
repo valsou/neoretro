@@ -1,7 +1,9 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import QtGraphicalEffects 1.15
 
 import "../../collectionsData.js" as CollectionsData
+import "qrc:/qmlutils" as PegasusUtils
 
 FocusScope {
     id: root
@@ -23,306 +25,302 @@ FocusScope {
         }
     }
 
-    // /* Collection release year */
-    // Text {
-    //     anchors {
-    //         bottom: center.top
-    //         bottomMargin: -vpx(40)
-    //     }
-    //     text: api.collections.get(currentCollectionIndex).extra.year
-    //     // text: "hello"
-    //     font.family: regularDosis.name
-    //     font.styleName: "Bold"
-    //     font.pixelSize: vpx(120)
-    //     color: collectionData.color
-    // }
+    /* Collection release year */
+    Text {
+        id: collectionRelease
+
+        clip: true
+
+        anchors {
+            left: collectionsList.left
+            // rightMargin: - collectionsList.width * 0.54
+            bottom: collectionsList.top
+        }
+        text: collectionData.release || ""
+        font.family: regularDosis.name
+        font.styleName: "SemiBold"
+        font.pixelSize: vpx(175)
+        lineHeight: 0.77
+        color: collectionData.color || textColor
+
+        ParallelAnimation {
+            id: animateCollectionRelease
+
+            alwaysRunToEnd: true
+            running: true
+            // NumberAnimation {
+            //     target: collectionRelease;
+            //     property: "anchors.bottomMargin";
+            //     from: -vpx(100);
+            //     to: -vpx(60);
+            //     duration: 400
+            // }
+            NumberAnimation {
+                target: collectionRelease;
+                property: "opacity";
+                from: 0;
+                to: 1;
+                duration: 800
+            }
+        }
+
+    }
+
+    /* Collection description/summary */
+    PegasusUtils.AutoScroll {
+        id: collectionSummary
+        width: collectionsList.width * 0.44
+        height: collectionsList.height * 0.3
+
+        anchors {
+            right: root.right
+            top: collectionsList.top
+            topMargin: collectionsList.height * 0.12
+        }
+
+        Text {
+            width: parent.width
+            text:   collections[currentCollectionIndex].summary ||
+                    collections[currentCollectionIndex].description ||
+                    ""
+            font {
+                family: global.fonts.sans
+                styleName: "Light"
+                pixelSize: vpx(16)
+            }
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignJustify
+            color: textColor
+            opacity: (text != "")
+        }
+    }
 
     /* Collections */
-    // Item {
-    //     id: center
+    CollectionsList {
+        id: collectionsList
 
-    //     height: parent.height * 0.6
-    //     anchors {
-    //         left: parent.left
-    //         right: parent.right
-    //         top: top.bottom
-    //     }
+        height: parent.height * 0.6
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: top.bottom
+        }
 
-    //     ListView {
-    //         id: listCollections
+        onCurrentIndexChanged: {
+            collectionSummary.recalcAnimation()
+            animateGo.restart()
+            animateCollectionRelease.restart()
+        }
+    }
 
-    //         anchors.fill: parent
+    Go {
+        id: go
+        anchors {
+            bottom: collectionsList.bottom
+            bottomMargin: vpx(15)
+            left: collectionsList.left
+            leftMargin: collectionsList.width * 0.5
+        }
 
-    //         focus: true
-    //         clip: false
-    //         displayMarginBeginning: root.width
-    //         displayMarginEnd: root.width
+        ParallelAnimation {
+            id: animateGo
 
-    //         model: collections
-    //         delegate: CollectionsDelegate {}
+            alwaysRunToEnd: true
+            running: true
+            NumberAnimation {
+                target: go;
+                property: "anchors.leftMargin";
+                from: collectionsList.width * 0.4;
+                to: collectionsList.width * 0.5;
+                duration: 200
+            }
+            NumberAnimation {
+                target: go;
+                property: "opacity";
+                from: 0;
+                to: 1;
+                duration: 400
+            }
+        }
 
-    //         currentIndex: currentCollectionIndex
+    }
 
-    //         Component.onCompleted: {
-    //             positionViewAtIndex(currentIndex, ListView.Beginning)
-    //         }
+    Item {
+        width: root.width * 0.52
+        height: collectionsList.height * 0.35
 
-    //         onCurrentIndexChanged: {
-    //             positionViewAtIndex(currentIndex, ListView.Beginning)
-    //         }
+        anchors {
+            right: root.right
+            bottom: collectionsList.top
+            bottomMargin: - (parent.height * 0.015)
+        }
 
-    //         interactive: false
+        /* Rectangle/separator */
+        Rectangle {
+            width: collectionName.width * 0.4
+            height: vpx(7)
+            radius: width / 2
 
-    //         orientation: ListView.Horizontal
-    //         highlightRangeMode: ListView.StrictlyEnforceRange
+            anchors {
+                top: collectionName.bottom
+                topMargin: vpx(10)
+                left: collectionName.left
+            }
 
-    //         highlightMoveDuration: 0
-    //         snapMode: ListView.SnapToItem
+            color: Qt.rgba(backgroundColor.r, backgroundColor.g, backgroundColor.b, 0.45)
 
-    //         Keys.onPressed: {
-    //             if (event.isAutoRepeat) {
-    //                 return
-    //             }
+            // transform: Matrix4x4 {
+            //     property real a: 45 * Math.PI / 180
+            //     matrix: Qt.matrix4x4(
+            //         1,      -Math.tan(a),       0,      0,
+            //         0,      1,                  0,      0,
+            //         0,      0,                  1,      0,
+            //         0,      0,                  0,      1
+            //     )
+            // }
+        }
 
-    //             if (event.key == Qt.Key_Left) {
-    //                 event.accepted = true
-    //                 prevCollection()
-    //             }
+        Item {
+            id: collectionName
 
-    //             if (event.key == Qt.Key_Right) {
-    //                 event.accepted = true
-    //                 nextCollection()
-    //             }
-    //         }
+            width: parent.width * 0.7
+            height: parent.height
 
-    //     }
-    // }
+            Text {
+                width: parent.width
+                height: parent.height
+                anchors.baseline: parent.bottom
 
+                text: collections[currentCollectionIndex].name
+                color: darkTheme ? textColor : collectionData.color || textColor
+                font.family: regularDosis.name
+                font.styleName: "Bold"
+                fontSizeMode: Text.Fit
+                minimumPixelSize: vpx(5)
+                font.pixelSize: vpx(200)
+                opacity: (collectionLogo.status == Image.Error)
+                Behavior on opacity { OpacityAnimator { duration: 300 } }
+            }
 
-    // // DEBUGGER
-    // Rectangle {
-    //     anchors.fill: center
-    //     color: "yellow"
-    //     opacity: 0.2
-    // }
+            Image {
+                id: collectionLogo
+                anchors.fill: parent
+                asynchronous: true
+                sourceSize.width: parent.width
+                source: darkTheme   ? "../../assets/collections/logo/"+collections[currentCollectionIndex].shortName+".png"
+                                    : "../../assets/collections/logo/"+collections[currentCollectionIndex].shortName+".png"
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+                verticalAlignment: Image.AlignBottom
+                opacity: (status == Image.Ready)
+                Behavior on opacity { OpacityAnimator { duration: 300 } }
+            }
+        }
 
+        Item {
+            id: collectionGamesCount
 
-    // /* Collection logo */
-    // Image {
-    //     id: logo
-    //     width: vpx(300)
-    //     height: vpx(200)
-    //     sourceSize.width: width
-    //     sourceSize.height: height
+            width: parent.width * 0.3
+            height: parent.height
+            anchors.right: parent.right
 
-    //     anchors {
-    //         bottom: top.bottom
-    //         left: top.left
-    //         leftMargin: top.width / 2.2
-    //     }
-    //     source: "../../assets/collections/logo/"+api.collections.get(currentCollectionIndex).shortName+".png"
-    //     fillMode: Image.PreserveAspectFit
-    //     verticalAlignment: Image.AlignBottom
-    //     mipmap: true
-    // }
+            /* Number of games in the collection with border outisde */
+            CountGames {
+                anchors {
+                    right: parent.right
+                    bottom: parent.bottom
+                }
+            }
 
-    // Rectangle {
-    //     width: root.width * 0.57
-    //     height: center.height * 0.35
+        }
 
-    //     anchors {
-    //         right: root.right
-    //         bottom: center.top
-    //         bottomMargin: - (parent.height * 0.04)
-    //     }
-
-    //     color: "yellow"
-
-    //     Rectangle {
-    //         id: collectionName
-
-    //         width: parent.width * 0.7
-    //         height: parent.height
-
-    //         color: "blue"
-    //     }
-
-    //     Rectangle {
-    //         id: collectionGamesCount
-
-    //         width: parent.width * 0.3
-    //         height: parent.height
-    //         anchors.right: parent.right
-
-    //         color: "green"
-
-    //         /* Number of games in the collection with border outisde */
-    //         CountGames {
-    //             anchors {
-    //                 right: parent.right
-    //                 bottom: parent.bottom
-    //             }
-    //             xMargins: vpx(12)
-    //             yMargins: vpx(5)
-    //             count: collections[currentCollectionIndex].games.count
-    //         }
-
-    //     }
-
-    // }
-
-    // Item {
-    //     id: collectionName
-    //     width: vpx(450)
-    //     height: vpx(100)
-    //     anchors {
-    //         left: root.left
-    //         leftMargin: root.width * 0.45
-    //         bottom: center.top
-    //         bottomMargin: -vpx(15)
-    //     }
-
-    //     Rectangle {
-    //         anchors.fill: parent
-    //         color: "blue"
-    //         opacity: 0.2
-    //     }
-
-    //     Text {
-    //         width: parent.width
-    //         height: parent.height
-    //         anchors.baseline: parent.bottom
-    //         text: collections[currentCollectionIndex].name
-    //         font.family: boldDosis.name
-    //         font.styleName: "Bold"
-
-    //         fontSizeMode: Text.Fit
-    //         minimumPixelSize: vpx(5)
-    //         font.pixelSize: vpx(200)
-
-    //         color: Qt.rgba(0.1, 0.1, 0.1)
-    //     }
-    // }
-
-
-    // /* 45deg skewed rectangle/separator */
-    // Rectangle {
-    //     width: logo.width * 0.4
-    //     height: vpx(7)
-
-    //     anchors {
-    //         top: logo.bottom
-    //         topMargin: vpx(10)
-    //         left: logo.left
-    //     }
-
-    //     color: "white"
-    //     transform: Matrix4x4 {
-    //         property real a: 45 * Math.PI / 180
-    //         matrix: Qt.matrix4x4(
-    //             1,      -Math.tan(a),       0,      0,
-    //             0,      1,                  0,      0,
-    //             0,      0,                  1,      0,
-    //             0,      0,                  0,      1
-    //         )
-    //     }
-    // }
-
-    // /* Number of games info */
-    // Rectangle {
-    //     anchors {
-    //         right: top.right
-    //         bottom: logo.bottom
-    //     }
-    //     width: nbGames.width + vpx(10)
-    //     height: nbGames.height + vpx(5)
-    //     color: "transparent"
-    //     border.color: "black"
-    //     border.width: vpx(1)
-
-    //     RowLayout {
-    //         id: nbGames
-    //         anchors.centerIn: parent
-    //         spacing: vpx(10)
-
-    //         Text {
-    //             text: "\ue0b8"
-    //             font.family: googleMaterial.name
-    //             font.pixelSize: vpx(22)
-    //             color: "black"
-    //         }
-
-    //         Text {
-    //             text: api.collections.get(currentCollectionIndex).games.count+" games"
-    //             font.family: regularDosis.name
-    //             font.pixelSize: vpx(22)
-    //             color: "black"
-    //         }
-    //     }
-
-    // }
+    }
 
     // /* Manufacturer logo */
     // /* REPLACE BY IMAGE */
-    // Text {
-    //     anchors {
-    //         bottom: center.bottom
-    //         bottomMargin: - contentHeight / 2
-    //         left: center.left
-    //         leftMargin: vpx(15)
-    //     }
+    Item {
+        width: vpx(90)
+        height: vpx(50)
+        anchors {
+            top: collectionsList.bottom
+            topMargin: -(height / 2)
+            left: collectionsList.left
+            leftMargin: vpx(45)
+        }
 
-    //     text: collectionData.manufacturer
-    //     font.family: regularDosis.name
-    //     font.styleName: "Bold"
-    //     font.pixelSize: vpx(54)
-    //     color: "grey"
+        Rectangle {
+            color: collectionData.color || textColor
+            anchors.centerIn: manufacturerLogo
+            width: manufacturerLogo.paintedWidth + vpx(25)
+            height: manufacturerLogo.paintedHeight + vpx(15)
+            radius: width / 2
+            visible: manufacturerLogo.status == Image.Ready
 
-    //     visible: collectionData.manufacturer
-    // }
+            Behavior on height {
+                NumberAnimation { duration: 150 }
+            }
+        }
+
+        Image {
+            id: manufacturerLogo
+            anchors.fill: parent
+            sourceSize.width: width
+            asynchronous: true
+            source: "../../assets/manufacturers/logo/"+collectionData.manufacturer+".svg" || ""
+            fillMode: Image.PreserveAspectFit
+            // mipmap: true
+        }
+
+        /* TODO : Fallback with Text instead of image */
+        /**********************************************/
+    }
 
     /* Helper nav */
-    // Item {
-    //     id: bottom
-    //     height: parent.height * 0.1
-    //     anchors {
-    //         left: parent.left
-    //         right: parent.right
-    //         top: center.bottom
-    //     }
+    Item {
+        id: bottom
+        height: parent.height * 0.1
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
 
-    //     Rectangle {
-    //         anchors {
-    //             left: parent.left
-    //             right: parent.right
-    //             bottom: parent.bottom
-    //             bottomMargin: vpx(10)
-    //         }
-    //         height: vpx(2)
-    //         color: "silver"
+        Rectangle {
+            anchors {
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+                bottomMargin: vpx(10)
+            }
+            height: vpx(2)
+            color: Qt.rgba(textColor.r, textColor.g, textColor.b, 0.1)
 
-    //         Rectangle {
-    //             id: navBar
-    //             x: width * currentCollectionIndex
-    //             width: parent.width / center.count
-    //             height: parent.height
-    //             color: collectionData.color || "grey"
-    //         }
+            Rectangle {
+                id: navBar
+                x: width * currentCollectionIndex
+                width: parent.width / collectionsList.count
+                height: parent.height
+                color: Qt.rgba(textColor.r, textColor.g, textColor.b, 0.2)
 
-    //         Text {
-    //             anchors {
-    //                 bottom: navBar.top
-    //                 horizontalCenter: navBar.horizontalCenter
-    //             }
-    //             text: (currentCollectionIndex + 1)+"/"+listCollections.count
-    //             font.family: regularDosis.name
-    //             font.styleName: "Medium"
-    //             font.pixelSize: vpx(18)
-    //             color: "black"
-    //         }
+                // Behavior on x {
+                //     PropertyAnimation { properties: "x"; easing.type: Easing.InOutQuad; duration: 100 }
+                // }
+            }
 
-    //     }
+            // Text {
+            //     anchors {
+            //         bottom: navBar.top
+            //         horizontalCenter: navBar.horizontalCenter
+            //     }
+            //     text: (currentCollectionIndex + 1)+"/"+collectionsList.count
+            //     font.family: regularDosis.name
+            //     font.styleName: "Medium"
+            //     font.pixelSize: vpx(18)
+            //     color: Qt.rgba(textColor.r, textColor.g, textColor.b, 0.6)
+            // }
 
-    // }
+        }
+
+    }
 
 }

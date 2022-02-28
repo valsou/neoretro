@@ -32,7 +32,7 @@ Item {
 
     Timer {
        id: timer
-       interval: 5000 // refresh time each 5 seconds (4 cycles saved)
+       interval: 10000
        repeat: true
        running: true
        triggeredOnStart: true

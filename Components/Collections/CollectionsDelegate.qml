@@ -9,8 +9,9 @@ Item {
     readonly property bool __isCurrentItem: ListView.isCurrentItem
     readonly property ListView __lv: ListView.view
     readonly property var blurHashBackground: BlurHashes.blurHashCollections[modelData.shortName] || BlurHashes.blurHashCollections["default"]
+    readonly property real variableOpacity: darkTheme ? 0.1 : 0.15
 
-    width: __isCurrentItem ? __lv.width * 0.5 : __lv.width * 0.3
+    width: __isCurrentItem ? __lv.width * 0.53 : __lv.width * 0.35
     height: __lv.height
 
     clip: false
@@ -21,7 +22,7 @@ Item {
 
         anchors.bottom: parent.bottom
 
-        opacity: __isCurrentItem ? 1 : 0.2
+        opacity: __isCurrentItem ? 1 : variableOpacity
 
         Rectangle {
             anchors.fill: parent
@@ -43,17 +44,11 @@ Item {
             hue: 0.0
             saturation: 0.0
             lightness: 0.0
-            visible: (__isCurrentItem == false)
+            opacity: (__isCurrentItem == false)
+            Behavior on opacity {
+                OpacityAnimator { duration: 150 }
+            }
         }
 
-        // // DEBUGGER
-        // Rectangle {
-        //     anchors.fill: parent
-        //     color: Qt.rgba(255,0,0,0.2)
-        //     border {
-        //         width: vpx(1)
-        //         color: "red"
-        //     }
-        // }
     }
 }

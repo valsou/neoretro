@@ -17,6 +17,11 @@ ListView {
             event.accepted = true
             incrementCurrentIndex()
         }
+
+        if (api.keys.isAccept(event)) {
+            event.accepted = true
+            currentPageIndex++
+        }
     }
 
     focus: true

@@ -2,48 +2,55 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 /* Time (hh:ss) display */
-Item {
-    id: root
 
-    implicitWidth: textTime.width + textTimeIcon.width + vpx(6)
-    implicitHeight: textTime.height
+RowLayout {
 
-    Text {
-        id: textTimeIcon
-        anchors.right: textTime.left
-        anchors.rightMargin: vpx(6)
-        anchors.bottom: textTime.baseline
+    // TextMetrics {
+    //     id: iconMetrics
+    //     text: "\ue8b5"
+    //     font {
+    //         family: googleMaterial.name
+    //         pixelSize: vpx(20)
+    //     }
+    // }
 
-        text: "\ue8b5"
-        font.family: googleMaterial.name
-        color: textColor
-        font.pixelSize: vpx(20)
+    TextMetrics {
+        id: valueMetrics
+        text: Qt.formatTime(new Date(), "hh:mm")
+        font {
+            family: fontSans.name
+            pixelSize: vpx(26)
+        }
     }
+
+    // Text {
+    //     id: textTimeIcon
+
+    //     text: iconMetrics.text
+    //     font: iconMetrics.font
+    //     color: Qt.rgba(0.3, 0.3, 0.3)
+
+    //     // Layout.alignment: Qt.AlignVCenter
+    //     Layout.bottomMargin: -vpx(4)
+    // }
 
     Text {
         id: textTime
-        anchors.baseline: root.bottom
-        anchors.right: root.right
-        font.family: regularDosis.name
-        color: textColor
-        text: Qt.formatTime(new Date(), "hh:mm")
-        font.pixelSize: vpx(26)
+
+        text: valueMetrics.text
+        font: valueMetrics.font
+        color: Qt.rgba(0.3, 0.3, 0.3)
+
+        // Layout.alignment: Qt.AlignVCenter
+        // Layout.bottomMargin: -vpx(6)
     }
 
     Timer {
-       id: timer
-       interval: 10000
-       repeat: true
-       running: true
-       triggeredOnStart: true
-       onTriggered: textTime.text=Qt.formatTime(new Date(), "hh:mm")
-   }
-
-    // Debugger Rectangle
-    // Rectangle {
-    //     anchors.fill: root
-    //     color: "red"
-    //     opacity: 0.7
-    // }
-
+        id: timer
+        interval: 10000
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: valueMetrics.text=Qt.formatTime(new Date(), "hh:mm")
+    }
 }

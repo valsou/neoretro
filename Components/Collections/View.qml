@@ -2,17 +2,23 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtGraphicalEffects 1.15
 
+import "../.."
 import "../../collectionsData.js" as CollectionsData
 import "qrc:/qmlutils" as PegasusUtils
 
 FocusScope {
     id: root
-
-    readonly property var collectionData: CollectionsData.get[collections[currentCollectionIndex].shortName] || ""
-
     focus: true
+    // readonly property var manufacturer: Consoles.getManufacturer(currentCollection.shortName)
+    // readonly property var consoles: Consoles.data
+    // readonly property var system: consoles[currentCollection.shortName]
+    readonly property var collectionData: CollectionsData.get[currentCollection.shortName] || ""
 
-    anchors.fill: parent
+    Rectangle {
+        anchors.fill: parent
+        color: "yellow"
+        opacity: 0.3
+    }
 
     /* Top Division */
     Item {
@@ -36,12 +42,12 @@ FocusScope {
             // rightMargin: - collectionsList.width * 0.54
             bottom: collectionsList.top
         }
-        text: collectionData.release || ""
-        font.family: regularDosis.name
+        text: Consoles.releaseDate(currentCollection.shortName) || ""
+        font.family: fontSans.name
         font.styleName: "SemiBold"
         font.pixelSize: vpx(175)
         lineHeight: 0.77
-        color: collectionData.color || textColor
+        color: Consoles.primaryColor(currentCollection.shortName) || textColor
 
         ParallelAnimation {
             id: animateCollectionRelease
@@ -80,8 +86,8 @@ FocusScope {
 
         Text {
             width: parent.width
-            text:   collections[currentCollectionIndex].summary ||
-                    collections[currentCollectionIndex].description ||
+            text:   currentCollection.summary ||
+                    currentCollection.description ||
                     ""
             font {
                 family: global.fonts.sans
@@ -145,6 +151,7 @@ FocusScope {
 
     }
 
+    /* Collection logo */
     Item {
         width: root.width * 0.52
         height: collectionsList.height * 0.35
@@ -156,29 +163,19 @@ FocusScope {
         }
 
         /* Rectangle/separator */
-        Rectangle {
-            width: collectionName.width * 0.4
-            height: vpx(7)
-            radius: width / 2
+        // Rectangle {
+        //     width: collectionName.width * 0.4
+        //     height: vpx(7)
+        //     radius: width / 2
 
-            anchors {
-                top: collectionName.bottom
-                topMargin: vpx(10)
-                left: collectionName.left
-            }
+        //     anchors {
+        //         top: collectionName.bottom
+        //         topMargin: vpx(10)
+        //         left: collectionName.left
+        //     }
 
-            color: Qt.rgba(backgroundColor.r, backgroundColor.g, backgroundColor.b, 0.45)
-
-            // transform: Matrix4x4 {
-            //     property real a: 45 * Math.PI / 180
-            //     matrix: Qt.matrix4x4(
-            //         1,      -Math.tan(a),       0,      0,
-            //         0,      1,                  0,      0,
-            //         0,      0,                  1,      0,
-            //         0,      0,                  0,      1
-            //     )
-            // }
-        }
+        //     color: Qt.rgba(backgroundColor.r, backgroundColor.g, backgroundColor.b, 0.45)
+        // }
 
         Item {
             id: collectionName
@@ -191,8 +188,8 @@ FocusScope {
                 height: parent.height
                 anchors.baseline: parent.bottom
 
-                text: collections[currentCollectionIndex].name
-                color: darkTheme ? textColor : collectionData.color || textColor
+                text: currentCollection.name
+                color: enableDarkTheme ? textColor : collectionData.color || textColor
                 font.family: regularDosis.name
                 font.styleName: "Bold"
                 fontSizeMode: Text.Fit
@@ -207,10 +204,10 @@ FocusScope {
                 anchors.fill: parent
                 asynchronous: true
                 sourceSize.width: parent.width
-                source: darkTheme   ? "../../assets/collections/logo/"+collections[currentCollectionIndex].shortName+".png"
-                                    : "../../assets/collections/logo/"+collections[currentCollectionIndex].shortName+".png"
+                source: enableDarkTheme   ? "../../assets/collections/logo/"+currentCollection.shortName+"_bw.png"
+                                    : "../../assets/collections/logo/"+currentCollection.shortName+".png"
                 fillMode: Image.PreserveAspectFit
-                mipmap: true
+                // mipmap: true
                 verticalAlignment: Image.AlignBottom
                 opacity: (status == Image.Ready)
                 Behavior on opacity { OpacityAnimator { duration: 300 } }
@@ -237,7 +234,6 @@ FocusScope {
     }
 
     // /* Manufacturer logo */
-    // /* REPLACE BY IMAGE */
     Item {
         width: vpx(90)
         height: vpx(50)
@@ -249,11 +245,11 @@ FocusScope {
         }
 
         Rectangle {
-            color: collectionData.color || textColor
+            // color: collectionData.color || textColor
+            color: Manufacturers.primaryColor(Consoles.manufacturer(currentCollection.shortName))
             anchors.centerIn: manufacturerLogo
-            width: manufacturerLogo.paintedWidth + vpx(25)
-            height: manufacturerLogo.paintedHeight + vpx(15)
-            radius: width / 2
+            width: manufacturerLogo.paintedWidth + vpx(15)
+            height: manufacturerLogo.paintedHeight + vpx(20)
             visible: manufacturerLogo.status == Image.Ready
 
             Behavior on height {
@@ -266,9 +262,10 @@ FocusScope {
             anchors.fill: parent
             sourceSize.width: width
             asynchronous: true
-            source: "../../assets/manufacturers/logo/"+collectionData.manufacturer+".svg" || ""
+            source: "../../assets/manufacturers/logo/"+Consoles.manufacturer(currentCollection.shortName)+".svg" || ""
             fillMode: Image.PreserveAspectFit
-            // mipmap: true
+            mipmap: true
+            smooth: true
         }
 
         /* TODO : Fallback with Text instead of image */
@@ -301,23 +298,7 @@ FocusScope {
                 width: parent.width / collectionsList.count
                 height: parent.height
                 color: Qt.rgba(textColor.r, textColor.g, textColor.b, 0.2)
-
-                // Behavior on x {
-                //     PropertyAnimation { properties: "x"; easing.type: Easing.InOutQuad; duration: 100 }
-                // }
             }
-
-            // Text {
-            //     anchors {
-            //         bottom: navBar.top
-            //         horizontalCenter: navBar.horizontalCenter
-            //     }
-            //     text: (currentCollectionIndex + 1)+"/"+collectionsList.count
-            //     font.family: regularDosis.name
-            //     font.styleName: "Medium"
-            //     font.pixelSize: vpx(18)
-            //     color: Qt.rgba(textColor.r, textColor.g, textColor.b, 0.6)
-            // }
 
         }
 

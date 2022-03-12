@@ -9,7 +9,7 @@ Item {
     readonly property bool __isCurrentItem: ListView.isCurrentItem
     readonly property ListView __lv: ListView.view
     readonly property var blurHashBackground: BlurHashes.blurHashCollections[modelData.shortName] || BlurHashes.blurHashCollections["default"]
-    readonly property real variableOpacity: darkTheme ? 0.1 : 0.15
+    readonly property real variableOpacity: enableDarkTheme ? 0.1 : 0.15
 
     width: __isCurrentItem ? __lv.width * 0.53 : __lv.width * 0.35
     height: __lv.height
@@ -17,6 +17,7 @@ Item {
     clip: false
 
     Item {
+        id: card
         width: parent.width
         height: __isCurrentItem ? parent.height: parent.height * 0.5
 
@@ -51,4 +52,5 @@ Item {
         }
 
     }
+
 }

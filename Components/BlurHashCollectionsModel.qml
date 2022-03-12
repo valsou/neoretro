@@ -2,7 +2,7 @@ import QtQuick 2.15
 
 ListModel {
     id: blurHashCollectionsModel
-    
+
     ListElement {
         shortname: "arcade"; hash: "ZRBz35%%WAM^RiRjW.bFWo.9%NR%V@Rje:WUbFWUNaWTozo#oeWAo0ayjZIVRjo#o#ozoJjajFjF"
     }

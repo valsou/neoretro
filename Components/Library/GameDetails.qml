@@ -14,39 +14,53 @@ Item {
         width: parent.width * 0.5
         height: parent.height
 
-        Text {
-            text: (currentGame.rating *5).toFixed(1)+"/5"
-            font {
-                family: regularDosis.name
-                styleName: "SemiBold"
-                pixelSize: vpx(26)
+        ColumnLayout {
+            Text {
+                text: (currentGame.rating *5).toFixed(1)+"/5"
+                font {
+                    family: regularDosis.name
+                    styleName: "SemiBold"
+                    pixelSize: vpx(26)
+                }
+            }
+
+            // Favorited
+            Text {
+                text: currentGame.favorite ? "LIKED" : ""
+                font {
+                    family: regularDosis.name
+                    styleName: "SemiBold"
+                    pixelSize: vpx(26)
+                }
+                color: "red"
+            }
+
+            Text {
+                text: currentGame.title
+                font {
+                    family: regularDosis.name
+                    styleName: "SemiBold"
+                    pixelSize: vpx(26)
+                }
+            }
+
+            Rectangle {
+                width: vpx(65)
+                height: vpx(3)
+                radius: width
+                color: textColor
+                opacity: 0.3
+            }
+
+            Text {
+                text: "Developed by "+currentGame.developer
+                font {
+                    family: regularDosis.name
+                    pixelSize: vpx(16)
+                }
             }
         }
 
-        Text {
-            text: currentGame.title
-            font {
-                family: regularDosis.name
-                styleName: "SemiBold"
-                pixelSize: vpx(26)
-            }
-        }
-
-        Rectangle {
-            width: vpx(65)
-            height: vpx(3)
-            radius: width
-            color: textColor
-            opacity: 0.3
-        }
-
-        Text {
-            text: "Developed by "+currentGame.developer
-            font {
-                family: regularDosis.name
-                pixelSize: vpx(16)
-            }
-        }
 
         PegasusUtils.AutoScroll {
             width: parent.width
@@ -98,9 +112,8 @@ Item {
                 text:   currentGame.releaseYear ||
                         ""
                 font {
-                    family: global.fonts.sans
-                    styleName: "Light"
-                    pixelSize: vpx(16)
+                    family: regularDosis.name
+                    pixelSize: parent.height * 0.7
                 }
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignJustify
@@ -112,19 +125,19 @@ Item {
         // Asset
         Item {
             width: parent.width
-            height: parent.height * 0.6
+            height: parent.height * 0.8
             anchors.bottom: parent.bottom
 
             Rectangle {
                 anchors.fill: parent
-                color: "blue"
-                opacity: 0.2
+                color: "silver"
+                opacity: 1
             }
 
             Image {
                 anchors.fill: parent
                 sourceSize.width: width
-                source: currentGame.assets.cartridge
+                source: currentGame.assets.boxFront
                 fillMode: Image.PreserveAspectFit
             }
         }

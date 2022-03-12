@@ -1,0 +1,6 @@
+# qmldir
+singleton Manufacturers Models/Manufacturers.qml
+singleton Consoles Models/Consoles.qml
+singleton Variables Models/Variables.qml
+singleton ProxyGameModels Models/ProxyGameModels.qml
+singleton Localization Models/Localization.qml

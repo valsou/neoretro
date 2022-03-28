@@ -27,11 +27,11 @@ neoretrō is a theme for Pegasus-frontend.
 
 ## Screenshots
 
-<img src="https://raw.githubusercontent.com/valsou/neoretro/readme_assets/assets/neoretro_v01_home.jpg" title="neoretrō home" />
+<img src="/neoretro_v01_home.jpg?raw=true" title="neoretrō home" />
 
-<img src="https://raw.githubusercontent.com/valsou/neoretro/readme_assets/assets/neoretro_v01_collections.jpg" title="neoretrō collections" />
+<img src="/neoretro_v01_collections.jpg?raw=true" title="neoretrō collections" />
 
-<img src="https://raw.githubusercontent.com/valsou/neoretro/readme_assets/assets/neoretro_v01_games.jpg" title="neoretrō games" />
+<img src="/neoretro_v01_games.jpg?raw=true" title="neoretrō games" />
 
 ## Changelog
 v0.131
